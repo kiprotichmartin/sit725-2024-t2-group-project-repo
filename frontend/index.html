@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Meta Tags -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Add this in the <head> section -->
+    <!--<meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:5000"
+    />-->
+    <title>YourAppName - Connect All Your Social Profiles</title>
+
+    <!-- MaterializeCSS CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+
+    <!-- Material Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <!-- Custom Styles -->
+    <style>
+      .hero {
+        background-image: url("your-background-image.jpg");
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 100px 0;
+      }
+      .hero-content {
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 50px;
+      }
+      .features .icon-block {
+        padding: 0 15px;
+      }
+      .features .material-icons {
+        font-size: 48px;
+      }
+      .btn-large {
+        margin: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="nav-wrapper teal lighten-1">
+      <div class="container">
+        <a href="index.html" class="brand-logo">YourAppName</a>
+        <a href="#" data-target="mobile-nav" class="sidenav-trigger"
+          ><i class="material-icons">menu</i></a
+        >
+        <ul class="right hide-on-med-and-down" id="nav-links">
+          <!--<li><a href="register.html">Register</a></li>
+          <li><a href="login.html">Login</a></li>-->
+          
+          <!-- Links will be inserted here -->
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <ul class="sidenav" id="mobile-nav">
+      <li><a href="register.html">Register</a></li>
+      <li><a href="login.html">Login</a></li>
+    </ul>
+
+    <!-- Hero Section -->
+    <div class="hero">
+      <div class="container hero-content center-align">
+        <h1>Welcome to YourAppName</h1>
+        <p class="flow-text">
+          Share all your social media profiles with a single QR code.
+        </p>
+        <a href="register.html" class="btn-large waves-effect waves-light teal"
+          >Get Started</a
+        >
+        <a href="login.html" class="btn-large waves-effect waves-light teal"
+          >Login</a
+        >
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container features">
+      <div class="section">
+        <div class="row">
+          <h4 class="center-align">Features</h4>
+
+          <div class="col s12 m4">
+            <div class="icon-block center-align">
+              <h2 class="brown-text">
+                <i class="material-icons">qr_code</i>
+              </h2>
+              <h5>QR Code Generation</h5>
+              <p>
+                Automatically generate a unique QR code that links to all your
+                social media profiles.
+              </p>
+            </div>
+          </div>
+
+          <div class="col s12 m4">
+            <div class="icon-block center-align">
+              <h2 class="brown-text">
+                <i class="material-icons">share</i>
+              </h2>
+              <h5>Easy Sharing</h5>
+              <p>
+                Share your QR code anywhere to let others easily find your
+                social media handles.
+              </p>
+            </div>
+          </div>
+
+          <div class="col s12 m4">
+            <div class="icon-block center-align">
+              <h2 class="brown-text">
+                <i class="material-icons">lock</i>
+              </h2>
+              <h5>Secure</h5>
+              <p>
+                Your data is secure with us. We use JWT for authentication and
+                encrypt your sensitive information.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="page-footer teal lighten-1">
+      <div class="container">
+        <div class="row">
+          <div class="col s12">
+            <h5 class="white-text">YourAppName</h5>
+            <p class="grey-text text-lighten-4">
+              Connect all your social media profiles in one place.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-copyright">
+        <div class="container">
+          © 2023 YourAppName
+          <a class="grey-text text-lighten-4 right" href="#!">Privacy Policy</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- MaterializeCSS JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- Custom Scripts -->
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        const elems = document.querySelectorAll(".sidenav");
+        M.Sidenav.init(elems);
+
+        // Check if user is already logged in
+        const token = localStorage.getItem("token");
+        if (token) {
+          try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/auth`, {
+              headers: { "x-auth-token": token },
+            });
+            if (response.ok) {
+              window.location.href = "dashboard.html";
+            } else {
+              // Token is invalid or expired
+              localStorage.removeItem("token");
+            }
+          } catch (error) {
+            console.error("Error verifying token:", error);
+          }
+        }
+
+        const navLinks = document.getElementById("nav-links");
+        if (localStorage.getItem("token")) {
+          navLinks.innerHTML = `
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="#" id="logout">Logout</a></li>
+        `;
+          document
+            .getElementById("logout")
+            .addEventListener("click", function () {
+              localStorage.removeItem("token");
+              window.location.href = "index.html";
+            });
+        } else {
+          navLinks.innerHTML = `
+          <li><a href="register.html">Register</a></li>
+          <li><a href="login.html">Login</a></li>
+        `;
+        }
+      });
+    </script>
+  </body>
+</html>

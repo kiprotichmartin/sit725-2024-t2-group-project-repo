@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Meta Tags -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Add this in the <head> section -->
+    <!--<meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:5000"
+    />-->
+    <title>Dashboard - YourAppName</title>
+
+    <!-- MaterializeCSS CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+
+    <!-- Material Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <!-- Custom Styles -->
+    <style>
+      .container {
+        /*margin-top: 50px;*/
+        max-width: 800px;
+      }
+      .qr-code {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+      .social-links .input-field {
+        margin-bottom: 20px;
+      }
+      .btn-logout {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="nav-wrapper teal lighten-1">
+      <div class="container">
+        <a href="index.html" class="brand-logo">YourAppName</a>
+        <a href="#" data-target="mobile-nav" class="sidenav-trigger"
+          ><i class="material-icons">menu</i></a
+        >
+        <ul class="right hide-on-med-and-down">
+          <li><a href="#" id="logoutBtn">Logout</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <ul class="sidenav" id="mobile-nav">
+      <li><a href="#" id="logoutBtnMobile">Logout</a></li>
+    </ul>
+
+    <!-- Dashboard Content -->
+    <div class="container">
+      <h4 class="center-align">Welcome, <span id="userName"></span></h4>
+
+      <!-- QR Code Section -->
+      <div class="qr-code">
+        <h5>Your QR Code</h5>
+        <img id="qrCodeImage" src="" alt="QR Code" />
+        <p>
+          Share this QR code to let others find all your social media profiles
+          in one place.
+        </p>
+      </div>
+
+      <!-- Social Links Form -->
+      <div class="social-links">
+        <h5>Manage Your Social Links</h5>
+        <form id="socialLinksForm">
+          <!-- Social Link Inputs -->
+          <div class="input-field">
+            <i class="material-icons prefix">public</i>
+            <input
+              id="facebook"
+              type="url"
+              class="validate"
+              placeholder="https://facebook.com/yourprofile"
+            />
+            <label for="facebook">Facebook</label>
+          </div>
+          <div class="input-field">
+            <i class="material-icons prefix">alternate_email</i>
+            <input
+              id="twitter"
+              type="url"
+              class="validate"
+              placeholder="https://twitter.com/yourprofile"
+            />
+            <label for="twitter">Twitter</label>
+          </div>
+          <div class="input-field">
+            <i class="material-icons prefix">camera_alt</i>
+            <input
+              id="instagram"
+              type="url"
+              class="validate"
+              placeholder="https://instagram.com/yourprofile"
+            />
+            <label for="instagram">Instagram</label>
+          </div>
+          <div class="input-field">
+            <i class="material-icons prefix">work</i>
+            <input
+              id="linkedin"
+              type="url"
+              class="validate"
+              placeholder="https://linkedin.com/in/yourprofile"
+            />
+            <label for="linkedin">LinkedIn</label>
+          </div>
+          <!-- Add more social platforms as needed -->
+          <div class="center-align">
+            <button
+              class="btn waves-effect waves-light teal"
+              type="submit"
+              name="action"
+            >
+              Save Links
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MaterializeCSS JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- Include Config -->
+    <script src="config.js"></script>
+
+    <!-- Custom Scripts -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize Sidenav for mobile navigation
+        const elems = document.querySelectorAll(".sidenav");
+        M.Sidenav.init(elems);
+
+        // Check if user is authenticated
+        const token = localStorage.getItem("token");
+        if (!token) {
+          window.location.href = "login.html";
+        } else {
+          loadDashboard();
+        }
+
+        // Logout button handler
+        document
+          .getElementById("logoutBtn")
+          .addEventListener("click", logoutUser);
+        document
+          .getElementById("logoutBtnMobile")
+          .addEventListener("click", logoutUser);
+
+        // Form submission handler
+        document
+          .getElementById("socialLinksForm")
+          .addEventListener("submit", saveSocialLinks);
+      });
+
+      async function loadDashboard() {
+        const token = localStorage.getItem("token");
+
+        try {
+          // Fetch user data
+          const userResponse = await fetch(`${CONFIG.API_BASE_URL}/api/auth`, {
+            headers: {
+              "x-auth-token": token,
+            },
+          });
+          const userData = await userResponse.json();
+
+          if (userResponse.ok) {
+            // Update user name
+            document.getElementById("userName").textContent = userData.name;
+
+            // Populate social links form
+            const socialLinks = userData.socialLinks || {};
+            document.getElementById("facebook").value =
+              socialLinks.facebook || "";
+            document.getElementById("twitter").value =
+              socialLinks.twitter || "";
+            document.getElementById("instagram").value =
+              socialLinks.instagram || "";
+            document.getElementById("linkedin").value =
+              socialLinks.linkedin || "";
+
+            M.updateTextFields();
+
+            // Fetch QR code
+            const qrResponse = await fetch(
+              `${CONFIG.API_BASE_URL}/api/users/qr`,
+              {
+                headers: {
+                  "x-auth-token": token,
+                },
+              }
+            );
+            const qrData = await qrResponse.json();
+
+            if (qrResponse.ok) {
+              document.getElementById("qrCodeImage").src = qrData.qrCodeSrc;
+            } else {
+              displayErrors(qrData);
+            }
+          } else {
+            displayErrors(userData);
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          M.toast({ html: "An error occurred", classes: "red" });
+          localStorage.removeItem("token");
+          window.location.href = "login.html";
+        }
+      }
+
+      function logoutUser(e) {
+        e.preventDefault();
+        localStorage.removeItem("token");
+        window.location.href = "login.html";
+      }
+
+      async function saveSocialLinks(e) {
+        e.preventDefault();
+
+        const token = localStorage.getItem("token");
+
+        const socialLinks = {
+          facebook: document.getElementById("facebook").value.trim(),
+          twitter: document.getElementById("twitter").value.trim(),
+          instagram: document.getElementById("instagram").value.trim(),
+          linkedin: document.getElementById("linkedin").value.trim(),
+          // Add more platforms as needed
+        };
+
+        // Client-side validation for URLs
+        for (const platform in socialLinks) {
+          if (socialLinks[platform] && !isValidURL(socialLinks[platform])) {
+            M.toast({
+              html: `Invalid URL for ${platform}: ${socialLinks[platform]}`,
+              classes: "red",
+            });
+            return;
+          }
+        }
+
+        try {
+          const response = await fetch(`${CONFIG.API_BASE_URL}/api/users`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "x-auth-token": token,
+            },
+            body: JSON.stringify({ socialLinks }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            M.toast({
+              html: "Social links updated successfully",
+              classes: "green",
+            });
+          } else {
+            displayErrors(data);
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          M.toast({ html: "An error occurred", classes: "red" });
+        }
+      }
+
+      function isValidURL(url) {
+        const regex =
+          /^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-._~:/?#[\]@!$&'()*+,;=]*)?$/;
+        return regex.test(url);
+      }
+
+      function displayErrors(data) {
+        if (data.errors) {
+          data.errors.forEach((error) =>
+            M.toast({ html: error.msg, classes: "red" })
+          );
+        } else {
+          M.toast({ html: data.msg || "An error occurred", classes: "red" });
+        }
+      }
+    </script>
+  </body>
+</html>

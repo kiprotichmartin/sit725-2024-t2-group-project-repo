@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Meta Tags -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Add this in the <head> section -->
+    <!--<meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:5000"
+    />-->
+    <title>Login - YourAppName</title>
+
+    <!-- MaterializeCSS CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+
+    <!-- Material Icons -->
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+
+    <!-- Custom Styles -->
+    <style>
+      .container {
+        /*margin-top: 50px;*/
+        max-width: 500px;
+      }
+      .card-panel {
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="nav-wrapper teal lighten-1">
+      <div class="container">
+        <a href="index.html" class="brand-logo">YourAppName</a>
+        <a href="#" data-target="mobile-nav" class="sidenav-trigger"
+          ><i class="material-icons">menu</i></a
+        >
+        <ul class="right hide-on-med-and-down">
+          <li><a href="register.html">Register</a></li>
+          <li class="active"><a href="login.html">Login</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <ul class="sidenav" id="mobile-nav">
+      <li><a href="register.html">Register</a></li>
+      <li class="active"><a href="login.html">Login</a></li>
+    </ul>
+
+    <!-- Login Form -->
+    <div class="container">
+      <h4 class="center-align">Login</h4>
+      <div class="card-panel">
+        <form id="loginForm">
+          <div class="input-field">
+            <!-- <i class="material-icons prefix">email</i> -->
+            <input id="email" type="email" class="validate" required />
+            <label for="email">Email</label>
+            <span class="helper-text" data-error="Invalid email"></span>
+          </div>
+          <div class="input-field">
+            <!-- <i class="material-icons prefix">lock</i> -->
+            <input id="password" type="password" class="validate" required />
+            <label for="password">Password</label>
+            <span class="helper-text" data-error="Password is required"></span>
+          </div>
+          <div class="center-align">
+            <button
+              class="btn waves-effect waves-light teal"
+              type="submit"
+              name="action"
+            >
+              Login
+            </button>
+          </div>
+        </form>
+      </div>
+      <p class="center-align">
+        Don't have an account? <a href="register.html">Register here</a>
+      </p>
+    </div>
+
+    <!-- MaterializeCSS JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- Include Config -->
+    <script src="config.js"></script>
+
+    <!-- Custom Scripts -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize Sidenav for mobile navigation
+        const elems = document.querySelectorAll(".sidenav");
+        M.Sidenav.init(elems);
+
+        // Check if user is already logged in
+        const token = localStorage.getItem("token");
+        if (token) {
+          window.location.href = "dashboard.html";
+        }
+      });
+
+      // Form submission handler
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", loginUser);
+
+      async function loginUser(e) {
+        e.preventDefault();
+
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        // Client-side validation
+        if (!validateEmail(email)) {
+          M.toast({ html: "Please enter a valid email", classes: "red" });
+          return;
+        }
+
+        if (!password) {
+          M.toast({ html: "Password is required", classes: "red" });
+          return;
+        }
+
+        try {
+          const response = await fetch(`${CONFIG.API_BASE_URL}/api/auth`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            // Store token securely
+            localStorage.setItem("token", data.token);
+            window.location.href = "dashboard.html";
+          } else {
+            // Display error messages from backend
+            if (data.errors) {
+              data.errors.forEach((error) =>
+                M.toast({ html: error.msg, classes: "red" })
+              );
+            } else {
+              M.toast({ html: data.msg || "Login failed", classes: "red" });
+            }
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          M.toast({ html: "An error occurred", classes: "red" });
+        }
+      }
+
+      function validateEmail(email) {
+        const re =
+          /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@(([^<>()[\]\.,;:\s@"]+\.)+[^<>()[\]\.,;:\s@"]{2,})$/i;
+        return re.test(String(email).toLowerCase());
+      }
+    </script>
+  </body>
+</html>
