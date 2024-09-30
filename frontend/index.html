@@ -9,7 +9,7 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:5000"
     />-->
-    <title>YourAppName - Connect All Your Social Profiles</title>
+    <title>Connect - Connect All Your Social Profiles</title>
 
     <!-- MaterializeCSS CSS -->
     <link
@@ -51,7 +51,7 @@
     <!-- Navigation -->
     <nav class="nav-wrapper teal lighten-1">
       <div class="container">
-        <a href="index.html" class="brand-logo">YourAppName</a>
+        <a href="index.html" class="brand-logo">Connect</a>
         <a href="#" data-target="mobile-nav" class="sidenav-trigger"
           ><i class="material-icons">menu</i></a
         >
@@ -73,7 +73,7 @@
     <!-- Hero Section -->
     <div class="hero">
       <div class="container hero-content center-align">
-        <h1>Welcome to YourAppName</h1>
+        <h1>Welcome to Connect</h1>
         <p class="flow-text">
           Share all your social media profiles with a single QR code.
         </p>
@@ -139,7 +139,7 @@
       <div class="container">
         <div class="row">
           <div class="col s12">
-            <h5 class="white-text">YourAppName</h5>
+            <h5 class="white-text">Connect</h5>
             <p class="grey-text text-lighten-4">
               Connect all your social media profiles in one place.
             </p>
@@ -148,7 +148,7 @@
       </div>
       <div class="footer-copyright">
         <div class="container">
-          © 2023 YourAppName
+          © 2024 Connect
           <a class="grey-text text-lighten-4 right" href="#!">Privacy Policy</a>
         </div>
       </div>
@@ -167,7 +167,8 @@
         const token = localStorage.getItem("token");
         if (token) {
           try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/auth`, {
+            //const response = await fetch(`${CONFIG.API_BASE_URL}/api/auth`, {
+            const response = await fetch(`http://localhost:3000/api/auth`, {
               headers: { "x-auth-token": token },
             });
             if (response.ok) {

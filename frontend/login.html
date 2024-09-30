@@ -9,7 +9,7 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:5000"
     />-->
-    <title>Login - YourAppName</title>
+    <title>Login - Connect</title>
 
     <!-- MaterializeCSS CSS -->
     <link
@@ -38,7 +38,7 @@
     <!-- Navigation -->
     <nav class="nav-wrapper teal lighten-1">
       <div class="container">
-        <a href="index.html" class="brand-logo">YourAppName</a>
+        <a href="index.html" class="brand-logo">Connect</a>
         <a href="#" data-target="mobile-nav" class="sidenav-trigger"
           ><i class="material-icons">menu</i></a
         >
@@ -131,7 +131,8 @@
         }
 
         try {
-          const response = await fetch(`${CONFIG.API_BASE_URL}/api/auth`, {
+          //const response = await fetch(`${CONFIG.API_BASE_URL}/api/auth`, {
+            const response = await fetch(`http://localhost:3000/api/auth`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

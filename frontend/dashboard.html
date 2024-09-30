@@ -9,7 +9,7 @@
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://cdnjs.cloudflare.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:5000"
     />-->
-    <title>Dashboard - YourAppName</title>
+    <title>Dashboard - Connect</title>
 
     <!-- MaterializeCSS CSS -->
     <link
@@ -47,7 +47,7 @@
     <!-- Navigation -->
     <nav class="nav-wrapper teal lighten-1">
       <div class="container">
-        <a href="index.html" class="brand-logo">YourAppName</a>
+        <a href="index.html" class="brand-logo">Connect</a>
         <a href="#" data-target="mobile-nav" class="sidenav-trigger"
           ><i class="material-icons">menu</i></a
         >
@@ -201,7 +201,8 @@
 
             // Fetch QR code
             const qrResponse = await fetch(
-              `${CONFIG.API_BASE_URL}/api/users/qr`,
+              //`${CONFIG.API_BASE_URL}/api/users/qr`,
+              `http://localhost:3000/api/users/qr`,
               {
                 headers: {
                   "x-auth-token": token,

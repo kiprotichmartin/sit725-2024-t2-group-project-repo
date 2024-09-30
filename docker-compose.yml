@@ -1,0 +1,48 @@
+version: '2'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000" # Adjust if your backend uses a different port
+    depends_on:
+      - mongodb
+    env_file:
+      - /backend/.env
+    volumes:
+      - ./backend:/app
+    networks:
+      - app-network
+  
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    env_file:
+      - /frontend/.env
+    volumes:
+      - ./frontend:/app
+    networks:
+      - app-network
+
+  mongodb:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+volumes:
+  mongo-data:
+
+networks:
+  app-network:
+    driver: bridge

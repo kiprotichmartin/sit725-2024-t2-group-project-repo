@@ -6,6 +6,8 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const path = require("path");
 
+const PORT = process.env.PORT;
+
 const app = express();
 
 // Connect to Database
@@ -17,7 +19,8 @@ app.use(helmet()); // Set security HTTP headers
 
 // CORS Configuration
 const corsOptions = {
-  origin: ["http://localhost:5500", "http://127.0.0.1:5500"], // Update with your frontend URLs
+  origin: [`http://localhost:${PORT}`, `http://127.0.0.1:${PORT}`], // Update with your frontend URLs
+  //origin: [`http://localhost:${PORT}`, path.resolve(__dirname, "../frontend/config.js", `${CONFIG.API_BASE_URL}`)],
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
@@ -64,8 +67,8 @@ app.use((err, req, res, next) => {
   res.status(500).json({ msg: "Server Error" });
 });
 
-const PORT = process.env.PORT || 5500;
+// const PORT = process.env.PORT || 5500;
 
 app.listen(PORT, () =>
-  console.log(`Server started on port: http://localhost:${PORT}`)
+  console.log(`Backend Server started on port: http://localhost:${PORT}`)
 );

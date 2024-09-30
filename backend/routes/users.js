@@ -126,7 +126,7 @@ router.get("/qr", authMiddleware, async (req, res) => {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    const url = `http://localhost:5500/user/${user._id}`; // Update with your frontend URL
+    const url = `http://localhost:3000/user/${user._id}`; // Update with your frontend URL
 
     QRCode.toDataURL(url, (err, src) => {
       if (err) {
